@@ -3,13 +3,29 @@
 <head>
 	<title>LZW algorithm visualize</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css2?family=Pangolin&display=swap" rel="stylesheet">
+
 	<style type="text/css">
 		.symbol{
 			/*max-width: 0.5% !important;*/
 			padding-right: 1px;
 			float: left;
-			width:20px;
+			width:50px;
 			text-align: center;
+		}
+		body{
+			height: 1500px;
+			font-family: 'Pangolin';
+		}
+		pre {
+			background-color: #eee;
+		    border: 1px solid #999;
+		}
+		#header{
+			text-align: center;
+		}
+		.main{
+			margin-left: 5px;
 		}
 	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -17,16 +33,90 @@
 	<script type="text/javascript" src="index.js"></script>
 </head>
 <body>
-	<div>LZW algorithm</div>
-	<div class="row">
-		<div class="col">
-			<div id="input">
+	<div id="header">
+		<h1>LZW Algorithm</h1>
+	</div>
+	<div class="main">
+		<div class=row>
+			<div class="col-7">
+				<div>Pseudocode</div>
+				<pre>
+					<code>
+BEGIN
+	s = next input character;
+	while not EOF
+	{
+	 c = next input character;
+	 if s + c exists in the dictionary
+	 s = s + c;
+	 else
+	{
+	 output the code for s;
+	 add string s + c to the dictionary with a new code;
+	 s = c;
+	}
+	}
+	output the code for s;
+END
+					</code>
+
+				</pre>
+			</div>
+			<div class="col-5">
+				Initial dictionary
+				<table class="table table-striped">
+				  <thead>
+				    <tr>
+				      <th scope="col">Entry</th>
+				      <th scope="col">Value</th>
+				    </tr>
+				  </thead>
+				  <tbody id="dictionary-body">
+
+				  </tbody>
+				</table>
+			</div>
+			
+		</div>
+
+		<div class="row">
+			<div class="col">
+				Input:
+				<div id="input">
+
+				</div>
 			</div>
 		</div>
-	</div>
-	<button id="handler">Run</button>
-	<div>
-		<div id="output" class="col"></div>
+		<div class="row">
+			<div class="col">
+				<button id="handler">Run</button>								
+				<button id="generate">Random string</button>						
+			</div>
+
+		</div>
+		<div>
+			<div id="output" class="col">
+				<table class="table table-striped">
+				  <thead>
+				    <tr>
+				      <th scope="col">Index</th>
+				      <th scope="col">s</th>
+				      <th scope="col">c</th>
+				      <th scope="col">Encoded string</th>
+				      <th scope="col">New entry added to dictionary</th>
+				    </tr>
+				  </thead>
+				  <tbody id="table-body">
+	<!-- 			    <tr>
+				      <th scope="row">1</th>
+				      <td>Mark</td>
+				      <td>Otto</td>
+				      <td>@mdo</td>
+				    </tr> -->
+				  </tbody>
+				</table>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

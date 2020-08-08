@@ -28,17 +28,21 @@ $(document).ready(function(){
 		let s_start_idx = 0;
 		let s_end_idx = 0;
 		result.steps.push({
-			s: {start:0, end:0}
+			s: {start:0, end:0, symbol: s}
 		})
 		for(let i = 1; i < len; ++i){
 			let c = input[i];
-			result.steps.push({
-				c: i
-			})
+			// result.steps.push({
+			// 	c: i
+			// })
+			result.steps[result.steps.length - 1].c = {
+				idx: i,
+				symbol: c
+			};
 			if (dict[s+c]) {
 				s = s + c;
 				result.steps.push({
-					s: {start:s_start_idx, end:i},
+					s: {start:s_start_idx, end:i,symbol:s},
 				});
 				s_end_idx = i;
 			}else {
@@ -48,7 +52,8 @@ $(document).ready(function(){
 				result.steps.push({
 					encoded: [...encoded],
 					old_s: {start: s_start_idx, end: s_end_idx},
-					s: {start: i, end: i},
+					s: {start: i, end: i, symbol: s},
+					new_entry: {entry: s+c, value: dict_len - 1}
 				})
 				s_start_idx = s_end_idx = i;
 				s = c;
@@ -57,23 +62,39 @@ $(document).ready(function(){
 		encoded.push(dict[s]);
 		result["encoded"] = encoded;
 		result.steps.push({
-			old_s: {start:s_start_idx, end:s_end_idx}
+			old_s: {start:s_start_idx, end:s_end_idx},
+			encoded: [...encoded]
 		});
 		return result;
 	}
 	var inputs = "";
-	inputs = "CCBDCCEAAAEACBBA"//generate_string(10);
-	console.log(inputs);
+	//inputs = "CCBDCCEAAAEACBBA"//generate_string(16);
+	inputs = generate_string(16);
 	var inputDiv = $("#input");
 	for (let i = 0; i < inputs.length; ++i) {
 		inputDiv.append(`<div class="symbol" id="sym-${i}">${inputs[i]}</div>`);
 	}
 	var handler = $("#handler");
+	var tblBody = $("#table-body");
+	var dictBody = $("#dictionary-body");
+	var generate = $("#generate");
+	generate.on("click", function(){
+		inputs = generate_string(16);
+		inputDiv.html("");
+		for (let i = 0; i < inputs.length; ++i) {
+			inputDiv.append(`<div class="symbol" id="sym-${i}">${inputs[i]}</div>`);
+		}		
+	})
+	for (let char of CHARS) {
+		dictBody.append(`<tr><th scope="row">${char}</th><td>${INITIAL_DICT[char]}</td></tr>`);
+	}
 	handler.on("click", function(){
 		let result = lzw(inputs);
-		console.log(result)
+		console.log(result);
+		tblBody.html("")
 		for (let i = 0; i < result.steps.length; ++i) {
 			let timeout = setTimeout(function(){
+				let rowInfo = {c: "", s: "", encoded: "", new_entry: ""};
 				let step = result.steps[i];
 				if (step["old_s"]) {
 					for (let idx = step.old_s.start; idx <= step.old_s.end; ++idx){
@@ -88,14 +109,23 @@ $(document).ready(function(){
 							backgroundColor: 'red'
 						});
 					}
+					rowInfo.s = step.s.symbol;
 				}
 				if (step["c"]) {
-					$(`#sym-${step.c}`).css({
+					$(`#sym-${step.c.idx}`).css({
 						backgroundColor: 'green'
 					});
+					rowInfo.c = step.c.symbol;
 				}
+				if (step["encoded"]) {
+					rowInfo.encoded = step.encoded.reduce((a,b) => a + " " + b);
+				}
+				if (step["new_entry"]) {
+					rowInfo.new_entry += step.new_entry.entry + ":" + step.new_entry.value.toString();
+				}
+				tblBody.append(`<tr> <th scope="row">${i}</th><td>${rowInfo.s}</td><td>${rowInfo.c}</td><td>${rowInfo.encoded}</td><td>${rowInfo.new_entry}</td></tr>`)
 				clearTimeout(timeout);
-			},500*i);
+			},700*i);
 		}
 	})
 });
