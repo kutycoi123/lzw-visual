@@ -25,12 +25,12 @@
 			text-align: center;
 		}
 		.main{
-			margin-left: 5px;
+			margin-left: 10px;
 		}
 	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-	<script type="text/javascript" src="index.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
 </head>
 <body>
 	<div id="header">
@@ -80,16 +80,21 @@ END
 		</div>
 
 		<div class="row">
-			<div class="col">
+			<div class="col-12">
 				Input:
 				<div id="input">
 
 				</div>
 			</div>
+			<div class="col-12">
+				<div id="output">
+					Output: 
+				</div>
+			</div>
 		</div>
 		<div class="row">
 			<div class="col">
-				<button id="handler">Run</button>								
+				<button id="run">Run</button>								
 				<button id="generate">Random string</button>						
 			</div>
 
@@ -100,8 +105,8 @@ END
 				  <thead>
 				    <tr>
 				      <th scope="col">Index</th>
-				      <th scope="col">s</th>
-				      <th scope="col">c</th>
+				      <th scope="col">s(red)</th>
+				      <th scope="col">c(green)</th>
 				      <th scope="col">Encoded string</th>
 				      <th scope="col">New entry added to dictionary</th>
 				    </tr>

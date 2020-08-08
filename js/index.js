@@ -32,9 +32,6 @@ $(document).ready(function(){
 		})
 		for(let i = 1; i < len; ++i){
 			let c = input[i];
-			// result.steps.push({
-			// 	c: i
-			// })
 			result.steps[result.steps.length - 1].c = {
 				idx: i,
 				symbol: c
@@ -67,31 +64,39 @@ $(document).ready(function(){
 		});
 		return result;
 	}
-	var inputs = "";
-	//inputs = "CCBDCCEAAAEACBBA"//generate_string(16);
-	inputs = generate_string(16);
+	var inputs = generate_string(16);
 	var inputDiv = $("#input");
+	var outputDiv = $("#output");
+	var run = $("#run");
+	var generate = $("#generate");		
+	var tblBody = $("#table-body");
+	var dictBody = $("#dictionary-body");
+
+
+	// Display input string
 	for (let i = 0; i < inputs.length; ++i) {
 		inputDiv.append(`<div class="symbol" id="sym-${i}">${inputs[i]}</div>`);
 	}
-	var handler = $("#handler");
-	var tblBody = $("#table-body");
-	var dictBody = $("#dictionary-body");
-	var generate = $("#generate");
+
+	// Display dictionary table
+	for (let char of CHARS) {
+		dictBody.append(`<tr><th scope="row">${char}</th><td>${INITIAL_DICT[char]}</td></tr>`);
+	}
+
 	generate.on("click", function(){
 		inputs = generate_string(16);
 		inputDiv.html("");
 		for (let i = 0; i < inputs.length; ++i) {
 			inputDiv.append(`<div class="symbol" id="sym-${i}">${inputs[i]}</div>`);
 		}		
-	})
-	for (let char of CHARS) {
-		dictBody.append(`<tr><th scope="row">${char}</th><td>${INITIAL_DICT[char]}</td></tr>`);
-	}
-	handler.on("click", function(){
+	});
+
+	run.on("click", function(){
 		let result = lzw(inputs);
-		console.log(result);
+		let encoded_string = result.encoded.reduce((a, b) => a + " " + b)
+		outputDiv.html("Output: ");
 		tblBody.html("")
+		$("html, body").animate({scrollTop: inputDiv.offset().top - 40});
 		for (let i = 0; i < result.steps.length; ++i) {
 			let timeout = setTimeout(function(){
 				let rowInfo = {c: "", s: "", encoded: "", new_entry: ""};
@@ -106,14 +111,14 @@ $(document).ready(function(){
 				if (step["s"]) {
 					for (let idx = step.s.start; idx <= step.s.end; ++idx) {
 						$(`#sym-${idx}`).css({
-							backgroundColor: 'red'
+							backgroundColor: '#fc3a3a'
 						});
 					}
 					rowInfo.s = step.s.symbol;
 				}
 				if (step["c"]) {
 					$(`#sym-${step.c.idx}`).css({
-						backgroundColor: 'green'
+						backgroundColor: '#1fc44e'
 					});
 					rowInfo.c = step.c.symbol;
 				}
@@ -124,8 +129,11 @@ $(document).ready(function(){
 					rowInfo.new_entry += step.new_entry.entry + ":" + step.new_entry.value.toString();
 				}
 				tblBody.append(`<tr> <th scope="row">${i}</th><td>${rowInfo.s}</td><td>${rowInfo.c}</td><td>${rowInfo.encoded}</td><td>${rowInfo.new_entry}</td></tr>`)
+				if (i == result.steps.length - 1) {
+					outputDiv.html("Output: " + encoded_string);
+				}
 				clearTimeout(timeout);
-			},700*i);
+			},800*i);
 		}
 	})
 });
