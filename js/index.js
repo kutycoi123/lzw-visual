@@ -29,7 +29,7 @@ $(document).ready(function(){
 		let s_end_idx = 0;
 		result.steps.push({
 			s: {start:0, end:0, symbol: s}
-		})
+		});
 		for(let i = 1; i < len; ++i){
 			let c = input[i];
 			result.steps[result.steps.length - 1].c = {
@@ -84,7 +84,7 @@ $(document).ready(function(){
 	}
 
 	generate.on("click", function(){
-		inputs = generate_string(16);
+		inputs = generate_string(Math.floor(Math.random() * 50 + 1));
 		inputDiv.html("");
 		for (let i = 0; i < inputs.length; ++i) {
 			inputDiv.append(`<div class="symbol" id="sym-${i}">${inputs[i]}</div>`);
@@ -93,10 +93,12 @@ $(document).ready(function(){
 
 	run.on("click", function(){
 		let result = lzw(inputs);
-		let encoded_string = result.encoded.reduce((a, b) => a + " " + b)
-		outputDiv.html("Output: ");
+		let encoded_string = result.encoded.reduce((a, b) => a + "  " + b)
+		outputDiv.html("Encoded: ");
 		tblBody.html("")
 		$("html, body").animate({scrollTop: inputDiv.offset().top - 40});
+		run.prop('disabled', true);
+		generate.prop('disabled', true);
 		for (let i = 0; i < result.steps.length; ++i) {
 			let timeout = setTimeout(function(){
 				let rowInfo = {c: "", s: "", encoded: "", new_entry: ""};
@@ -130,7 +132,9 @@ $(document).ready(function(){
 				}
 				tblBody.append(`<tr> <th scope="row">${i}</th><td>${rowInfo.s}</td><td>${rowInfo.c}</td><td>${rowInfo.encoded}</td><td>${rowInfo.new_entry}</td></tr>`)
 				if (i == result.steps.length - 1) {
-					outputDiv.html("Output: " + encoded_string);
+					outputDiv.html("Encoded: " + encoded_string);
+					generate.prop('disabled', false);
+					run.prop('disabled', false);
 				}
 				clearTimeout(timeout);
 			},800*i);
